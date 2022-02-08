@@ -2,7 +2,9 @@
 
 ## Basic Usage
 
-```python
+### Backups
+
+```bash
 docker run -d \
     -e CRON_SOURCES="/var/tmp/backup_directory,/var/tmp/backup_volume" \
     -e CRON_NAMES="backup_directory,backup_volume" \
@@ -12,9 +14,42 @@ docker run -d \
     bmaximuml/alpine-cron:1.1
 ```
 
+### Periodic Shell Scripts
+
+```bash
+docker run -d \
+    -v do_something_daily.sh:/etc/periodic/daily/do_something.sh:ro
+    -v do_something_hourly.sh:/etc/periodic/hourly/do_something.sh:ro
+    -v do_something_weekly.sh:/etc/periodic/weekly/do_something.sh:ro
+    -v do_something_monthly.sh:/etc/periodic/monthly/do_something.sh:ro
+    -v do_something_15min.sh:/etc/periodic/15min/do_something.sh:ro
+    bmaximuml/alpine-cron:1.1
+```
+### Periodic Python Scripts
+
+```bash
+docker run -d \
+    -v do_something_daily.py:/etc/periodic/daily/do_something.py:ro
+    -v do_something_hourly.py:/etc/periodic/hourly/do_something.py:ro
+    -v do_something_weekly.py:/etc/periodic/weekly/do_something.py:ro
+    -v do_something_monthly.py:/etc/periodic/monthly/do_something.py:ro
+    -v do_something_15min.py:/etc/periodic/15min/do_something.py:ro
+    bmaximuml/alpine-cron:1.1-python
+```
+
 ## Description
 
-Iterates over `CRON_SOURCES` and `CRON_NAMES` in parallel, tar-ing up the directory or file paths listed in `CRON_SOURCES` and placing the result in `/backups/$CRON_NAMES`.
+Cron executes all files in the subdirectories of the */etc/periodic* directory.
+These directories are:
+
+- *15min*
+- *hourly*
+- *daily*
+- *weekly*
+- *monthtly*
+
+Directories listed in `CRON_SOURCES` will be tar-ed up and stored in */backups* daily.
+`CRON_SOURCES` and `CRON_NAMES` will be iterated over in parallel, tar-ing up the directory or file paths listed in `CRON_SOURCES` and placing the result in `/backups/$CRON_NAMES`.
 
 ## Docker Compose
 
