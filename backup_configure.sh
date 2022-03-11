@@ -27,19 +27,17 @@ EOF
 [[ ${#cron_sources[*]} -ne ${#cron_names[*]} ]] \
   && error_diff_src_tgt
 
-for num in {0..${#cron_sources[*]}}
+IFS=' '
+for num in $(seq -s ' ' 0 $(expr ${#cron_sources[*]} - 1))
 do
   src=${cron_sources[$num]}
   name=${cron_names[$num]}
-  cat << EOF > /etc/periodic/daily/${name}
-
-
+  cat << EOF > /etc/periodic/daily/${name/\//_}
 #!/bin/sh
 
-dt=$(date +\"%F_%H-%M-%S\")
+dt=\$(date +%F_%H-%M-%S)
 mkdir -p /backups/${name}
-tar cvf /backups/${name}/\${d}.tar ${src}
-
+tar cvf /backups/${name}/\${dt}.tar ${src}
 EOF
 
 done
